@@ -26,12 +26,6 @@ def main(
     cached: bool = False,
     skip_games_with_user: str | None = None,
 ) -> None:
-    # user_name = 'adumbidiot'
-    # user_tag_line = '1234'
-
-    # user_name = "HAVlD5"
-    # user_tag_line = "4955"
-
     user = parse_formatted_name(formatted_name)
 
     skip_games_with_user_parsed = None
