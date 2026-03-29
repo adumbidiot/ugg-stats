@@ -68,7 +68,7 @@ class Stats:
 
     @property
     def win_pct(self) -> float:
-        return self.total_wins / self.total_matches
+        return (self.total_wins / self.total_matches) * 100.0
 
     @property
     def average_kills(self) -> float:
