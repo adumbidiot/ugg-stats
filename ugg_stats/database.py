@@ -108,6 +108,9 @@ class User:
     tag: str
     id: int = 0
 
+    def formatted_name(self) -> str:
+        return f"{self.name}#{self.tag}"
+
     def as_row(self) -> dict[str, int | str | None]:
         return {
             "id": None if self.id == 0 else self.id,

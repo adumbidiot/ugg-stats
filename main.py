@@ -62,6 +62,26 @@ class Stats:
     total_deaths: int = 0
     total_assists: int = 0
 
+    @property
+    def total_matches(self) -> int:
+        return self.total_wins + self.total_losses
+
+    @property
+    def win_pct(self) -> float:
+        return self.total_wins / self.total_matches
+
+    @property
+    def average_kills(self) -> float:
+        return self.total_kills / self.total_matches
+
+    @property
+    def average_deaths(self) -> float:
+        return self.total_deaths / self.total_matches
+
+    @property
+    def average_assists(self) -> float:
+        return self.total_assists / self.total_matches
+
 
 def get_stats_for_user(
     database: Database, user: User, skip_games_with_user: User | None = None
@@ -93,11 +113,9 @@ def get_stats_for_user(
             if team_user.id == user.id:
                 continue
 
-            team_user_formatted_name = f"{team_user.name}#{team_user.tag}"
-
             entry = data_map.setdefault(
-                team_user_formatted_name,
-                {"User": team_user_formatted_name, "Wins": 0, "Losses": 0},
+                team_user.formatted_name(),
+                {"User": team_user.formatted_name(), "Wins": 0, "Losses": 0},
             )
             if summary.win:
                 entry["Wins"] += 1
@@ -105,6 +123,8 @@ def get_stats_for_user(
                 entry["Losses"] += 1
 
     stats.df = pd.DataFrame(data_map.values(), columns=["User", "Wins", "Losses"])
+    stats.df["Total"] = stats.df["Wins"] + stats.df["Losses"]
+    stats.df["Win %"] = (stats.df["Wins"] / stats.df["Total"]) * 100.0
 
     return stats
 
@@ -132,24 +152,22 @@ def main(
 
         stats = get_stats_for_user(database, user, skip_games_with_user_parsed)
 
-    stats.df["Total"] = stats.df["Wins"] + stats.df["Losses"]
-    stats.df["Win %"] = stats.df["Wins"] / stats.df["Total"]
+    stats.df["Win %"] = stats.df["Win %"].round(decimals=3)
     stats.df = stats.df.sort_values(by="Win %", ascending=False)
     stats.df = stats.df[stats.df["Total"] >= min_total]
 
     print(stats.df.to_string(index=False))
 
-    total_matches = stats.total_wins + stats.total_losses
     print()
     print(f"Total Wins: {stats.total_wins}")
     print(f"Total Losses: {stats.total_losses}")
-    print(f"Total Matches: {total_matches}")
-    print(f"Total Win %: {stats.total_wins / total_matches:.3f}")
+    print(f"Total Matches: {stats.total_matches}")
+    print(f"Total Win %: {stats.win_pct:.3f}")
     print(f"Total Kills: {stats.total_kills}")
     print(f"Total Deaths: {stats.total_deaths}")
     print(f"Total Assists: {stats.total_assists}")
     print(
-        f"Average K/D/A: {stats.total_kills / total_matches:.3f}/{stats.total_deaths / total_matches:.3f}/{stats.total_assists / total_matches:.3f}"
+        f"Average K/D/A: {stats.average_kills:.3f}/{stats.average_deaths:.3f}/{stats.average_assists:.3f}"
     )
 
 
