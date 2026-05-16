@@ -8,6 +8,7 @@ dependencies = [
     "curl-cffi>=0.14.0",
     "dacite>=1.9.2",
     "pandas>=3.0.1",
+    "scipy>=1.17.1",
     "typer>=0.24.1",
 ]
 

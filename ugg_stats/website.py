@@ -175,7 +175,7 @@ def graphql_request(
     assert all(isinstance(value, str) for value in data.keys())
     assert all(isinstance(value, object) for value in data.values())
 
-    return data
+    return data  # ty:ignore
 
 
 class Season(Enum):
