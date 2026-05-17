@@ -160,6 +160,7 @@ def graphql_request(
         response: Response = session.post(
             "https://u.gg/api",
             params={"operationName": operation, "query": query, "variables": variables},  # type: ignore
+            impersonate="chrome",
         )
 
         if response.status_code in {500, 502, 503}:
